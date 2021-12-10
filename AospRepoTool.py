@@ -1111,6 +1111,24 @@ Run \'./AospRepoTool.py -h\' for more information"""
                             "  exit 1\n"
                             "fi\n".format(project.path))
             f_out.write("cd $PATCH_HOME\n")
+
+            if self._list_archives:
+                f_out.write("#Traitement des archives non suivies dans le manifest AOSP\n")
+                for path, archive in self._list_archives:
+                    f_out.write("#Extraction de {} dans {}\n".format(archive, path))
+                    f_out.write("rm -Rf $AOSP_BASE/{}\n".format(path))
+                    f_out.write("tar -xf $PATCH_HOME/{} -C $AOSP_BASE\n".format(archive))
+                    f_out.write("if [ $? -ne 0 ]; then\n"
+                                "  echo \"Erreur pour l'archive {}: décompression du module\"\n"
+                                "  exit 1\n"
+                                "fi\n".format(archive))
+                    f_out.write("cd $AOSP_BASE/{} && git init && git add -A && "
+                                "git commit -m \"commit initial\"\n".format(path))
+                    f_out.write("if [ $? -ne 0 ]; then\n"
+                                "  echo \"Erreur pour l'archive {}: initialisation du repo git\"\n"
+                                "  exit 1\n"
+                                "fi\n".format(archive))
+
         mode = os.stat(file_name)
         os.chmod(file_name, stat.S_IMODE(mode.st_mode) | stat.S_IEXEC)
 
