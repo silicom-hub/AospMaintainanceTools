@@ -612,7 +612,7 @@ class AospRepoTool:
         if entry:
             Found = None
             for stored_entry in self._list_patch:
-                if stored_entry[0] == entry[0]:
+                if stored_entry[0] == entry[0] and stored_entry[1] == entry[1]:
                     Found = stored_entry
                     break
             if Found is None:
